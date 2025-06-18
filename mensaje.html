@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mensaje Sorpresa con Biblioteca y Botón Deshabilitado Temporalmente</title>
+<style>
+  body {
+    margin: 0; padding: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #6366f1, #4338ca);
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+    user-select: none;
+  }
+  h1 {
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-align: center;
+  }
+  #container {
+    max-width: 600px;
+    width: 100%;
+    background: rgba(255 255 255 / 0.1);
+    border-radius: 16px;
+    padding: 24px 32px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.3);
+    position: relative;
+  }
+  #btn-sorpresa-container {
+    position: relative;
+  }
+  #btn-sorpresa {
+    display: block;
+    margin: 16px auto 24px auto;
+    padding: 14px 32px;
+    background-color: #4f46e5;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.7);
+    transition: background-color 0.3s ease;
+    overflow: visible;
+  }
+  #btn-sorpresa[disabled] {
+    background-color: #7c3aed88;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  #btn-sorpresa:hover:not([disabled]) {
+    background-color: #3730a3;
+  }
+  #message {
+    font-size: 1.4rem;
+    font-weight: 600;
+    line-height: 1.5;
+    min-height: 100px;
+    white-space: pre-wrap;
+    text-align:center;
+    margin-top: 20px;
+    visibility: hidden;
+  }
+  #date {
+    font-style: italic;
+    font-size: 1rem;
+    color: #cbd5e1;
+    text-align:center;
+    margin-bottom: 24px;
+    visibility: hidden;
+  }
+  #btn-library {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #4f46e5;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #btn-library:hover:not([disabled]) {
+    background-color: #3730a3;
+  }
+  #btn-library svg {
+    width: 24px;
+    height: 24px;
+  }
+  #library-panel {
+    position: fixed;
+    bottom: 80px;
+    right: 24px;
+    width: 300px;
+    max-height: 350px;
+    background: rgba(255 255 255 / 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.3);
+    overflow-y: auto;
+    padding: 16px 20px;
+    color: white;
+    display: none;
+    user-select: auto;
+    z-index: 1000;
+  }
+  #library-panel h2 {
+    margin-top: 0;
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  #library-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  #library-list li {
+    border-bottom: 1px solid rgba(255 255 255 / 0.3);
+    padding: 6px 0;
+    font-size: 1rem;
+  }
+  #library-list time {
+    display: block;
+    font-size: 0.8rem;
+    color: #a5b4fc;
+    margin-top: 4px;
+  }
+  .heart {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    pointer-events: none;
+    color: #ff4d6d;
+    user-select: none;
+    opacity: 1;
+    animation: floatUp 2s forwards;
+    font-size: 24px;
+    will-change: transform, opacity;
+  }
+  @keyframes floatUp {
+    0% {
+      transform: translate(0, 0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(0, -60px) scale(1.3);
+      opacity: 0;
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>Mensaje Bonito</h1>
+  <div id="container" role="main" aria-live="polite">
+    <div id="btn-sorpresa-container">
+      <button id="btn-sorpresa" aria-label="Mostrar mensaje sorpresa del día">Sorpresa</button>
+    </div>
+    <div id="message" aria-label="Mensaje motivacional y alentador"></div>
+    <div id="date" aria-label="Fecha del mensaje"></div>
+  </div>
+  <button id="btn-library" aria-label="Mostrar biblioteca de mensajes">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" >
+      <path d="M21 15V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10"/>
+      <path d="M7 19h10"/>
+      <path d="M7 15v4"/>
+      <path d="M17 15v4"/>
+    </svg>
+  </button>
+  <section id="library-panel" aria-label="Biblioteca de mensajes recibidos">
+    <h2>Biblioteca de mensajes</h2>
+    <ul id="library-list" role="list"></ul>
+    <p style="font-size: 0.9rem; color: #a5b4fc; margin-top:10px;">Aquí se guardan todos los mensajes únicos que has recibido.</p>
+  </section>
+
+<script>
+  const messages = [
+    "Cada día es una nueva oportunidad para ser feliz y brillar con tu luz propia.",
+    "No importa lo lento que avances mientras no te detengas.",
+    "Confía en ti mismo, eres capaz de cosas increíbles.",
+    "Las dificultades de hoy son las oportunidades de mañana.",
+    "Cada sonrisa que das es un regalo para el mundo.",
+    "El éxito es la suma de pequeños esfuerzos repetidos día tras día.",
+    "Sé amable contigo mismo, eso también es parte de crecer.",
+    "Cada paso que das te acerca a tus sueños, sigue adelante.",
+    "El poder de tu mente crea tu realidad. Piensa positivo.",
+    "Aprecia lo que tienes y trabaja por lo que sueñas."
+  ];
+
+  const btn = document.getElementById('btn-sorpresa');
+  const messageEl = document.getElementById('message');
+  const dateEl = document.getElementById('date');
+  const container = document.getElementById('container');
+  const btnContainer = document.getElementById('btn-sorpresa-container');
+  const btnLibrary = document.getElementById('btn-library');
+  const libraryPanel = document.getElementById('library-panel');
+  const libraryList = document.getElementById('library-list');
+
+  const BLOCK_TIME_MS = 24 * 60 * 60 * 1000;
+
+  function loadLibrary() {
+    if(!window.localStorage) return [];
+    const libJSON = localStorage.getItem('mensajeBibliotecaUnico');
+    if(!libJSON) return [];
+    try {
+      const lib = JSON.parse(libJSON);
+      if(Array.isArray(lib)) return lib;
+    } catch {}
+    return [];
+  }
+  function saveToLibrary(msg, dateStr) {
+    if(!window.localStorage) return;
+    const lib = loadLibrary();
+    if (!lib.some(entry => entry.msg === msg)) {
+      lib.push({msg, date: dateStr});
+      localStorage.setItem('mensajeBibliotecaUnico', JSON.stringify(lib));
+    }
+  }
+  function renderLibrary() {
+    const lib = loadLibrary();
+    libraryList.innerHTML = '';
+    lib.slice().reverse().forEach(entry => {
+      const li = document.createElement('li');
+      li.textContent = entry.msg;
+      const time = document.createElement('time');
+      time.textContent = new Date(entry.date).toLocaleString();
+      li.appendChild(time);
+      libraryList.appendChild(li);
+    });
+  }
+  function getDayOfYear(date) {
+    const start = new Date(date.getFullYear(), 0, 0);
+    const diff = date - start;
+    const oneDay = 1000 * 60 * 60 * 24;
+    return Math.floor(diff / oneDay);
+  }
+  function showMessage() {
+    const now = new Date();
+    const dayNum = getDayOfYear(now);
+    const index = (dayNum - 1) % messages.length;
+    const msg = messages[index];
+    messageEl.textContent = msg;
+    dateEl.textContent = now.toLocaleDateString(undefined, {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    messageEl.style.visibility = 'visible';
+    dateEl.style.visibility = 'visible';
+    saveToLibrary(msg, now.toISOString());
+    renderLibrary();
+  }
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.textContent = '❤️';
+    const rect = btn.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    const btnCenterX = rect.left + rect.width / 2 - containerRect.left;
+    const btnCenterY = rect.top + rect.height / 2 - containerRect.top;
+    const radius = 30 + Math.random() * 30;
+    const angle = Math.random() * 2 * Math.PI;
+    const x = btnCenterX + radius * Math.cos(angle) - 12;
+    const y = btnCenterY + radius * Math.sin(angle) - 12;
+    btnContainer.appendChild(heart);
+    heart.style.left = `${x}px`;
+    heart.style.top = `${y}px`;
+    heart.addEventListener('animationend', () => {
+      heart.remove();
+    });
+  }
+  function isButtonBlocked() {
+    if(!window.localStorage) return false;
+    const blockedAtStr = localStorage.getItem('btnBlockedAt');
+    if(!blockedAtStr) return false;
+    const blockedAt = parseInt(blockedAtStr, 10);
+    if(isNaN(blockedAt)) return false;
+    return (Date.now() - blockedAt) < BLOCK_TIME_MS;
+  }
+  function blockButton() {
+    if(!window.localStorage) return;
+    localStorage.setItem('btnBlockedAt', Date.now().toString());
+  }
+  let countdownInterval = null;
+  function updateButtonState() {
+    if(isButtonBlocked()){
+      btn.disabled = true;
+      let rem = BLOCK_TIME_MS - (Date.now() - parseInt(localStorage.getItem('btnBlockedAt'), 10));
+      updateCountdown(rem);
+      if(countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        rem -= 1000;
+        if(rem <= 0){
+          clearInterval(countdownInterval);
+          btn.disabled = false;
+          btn.textContent = 'Sorpresa';
+        } else {
+          updateCountdown(rem);
+        }
+      }, 1000);
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Sorpresa';
+      if(countdownInterval){
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+      }
+    }
+  }
+  function msToTime(duration){
+    let seconds = Math.floor((duration / 1000) % 60),
+        minutes = Math.floor((duration / (1000 * 60)) % 60),
+        hours = Math.floor(duration / (1000 * 60 * 60));
+    return `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+  }
+  function updateCountdown(ms){
+    btn.textContent = `Espera: ${msToTime(ms)}`;
+  }
+  btn.addEventListener('click', () => {
+    if(btn.disabled) return;
+    createHeart();
+    showMessage();
+    blockButton();
+    updateButtonState();
+  });
+  btnLibrary.addEventListener('click', () => {
+    if(libraryPanel.style.display === 'block'){
+      libraryPanel.style.display = 'none';
+    } else {
+      libraryPanel.style.display = 'block';
+      renderLibrary();
+    }
+  });
+  renderLibrary();
+  updateButtonState();
+</script>
+</body>
+</html>
+  
